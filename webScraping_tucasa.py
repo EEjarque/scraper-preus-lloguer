@@ -16,18 +16,21 @@ csv_writer = csv.writer(csv_file)
 csv_writer.writerow(['ciutat', 'pagina', 'zona', 'carrer', 'preu', 'm2', 'preu_m2', 'nHab', 'nBanys'])
 
 # Ciutats que volem escrapejar: Diccionari amb les url inicials
-ciutats = {"girona": "https://www.tucasa.com/alquiler/viviendas/girona/girona-capital/?r=&idz=0017.0001.9999.0001&ord=&pgn=1", 
-           "tarragona": "https://www.tucasa.com/alquiler/viviendas/tarragona/tarragona-capital/?r=&idz=0043.0001.9999.0001&ord=&pgn=1", 
-           "lleida": "https://www.tucasa.com/alquiler/viviendas/lleida/lleida-capital/?r=&idz=0025.0001.9999.0001&ord=&pgn=1",
-           "barcelona": "https://www.tucasa.com/alquiler/viviendas/barcelona/barcelona-capital/?r=&idz=0008.0001.9999.0001&ord=&pgn=1"}
+ciutats = {"girona": "https://www.tucasa.com/alquiler/viviendas/girona/girona-capital/?r=&idz=0017.0001.9999.0001&ord=&pgn=", 
+           "tarragona": "https://www.tucasa.com/alquiler/viviendas/tarragona/tarragona-capital/?r=&idz=0043.0001.9999.0001&ord=&pgn=", 
+           "lleida": "https://www.tucasa.com/alquiler/viviendas/lleida/lleida-capital/?r=&idz=0025.0001.9999.0001&ord=&pgn=",
+           "barcelona": "https://www.tucasa.com/alquiler/viviendas/barcelona/barcelona-capital/?r=&idz=0008.0001.9999.0001&ord=&pgn="}
 
 # Loop sobre cada ciutat
 for ciutat in ciutats:
-    
+
+    numPag = 1
     url = ciutats[ciutat]
 
     # Loop sobre les diferents pàgines de la cerca
     while url != None:
+
+        url = ciutats[ciutat] + str(numPag)
             
         # Càrrega de la pàgina web
         page = requests.get(url)
@@ -86,13 +89,15 @@ for ciutat in ciutats:
             csv_writer.writerow([ciutat, pagina, zona, carrer, preu, m2, preu_m2, nHab, nBanys])
             
                 
-        # Url de la pàgina següent
+        # Comprovem si existeix una pàgina següent
         try:
             url0 = soup.find('div', class_="contenedor-paginacion-listado")
             url = url0.find_all('a', class_='btn-paginacion br5 tr05')[1]['href']
     
         except Exception as e:
             url = None
+
+        numPag = numPag + 1
 
 csv_file.close()
 
