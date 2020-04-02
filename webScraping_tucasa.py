@@ -19,7 +19,7 @@ csv_writer.writerow(['ciutat', 'pagina', 'zona', 'carrer', 'preu', 'm2', 'preu_m
 ciutats = {"girona": "https://www.tucasa.com/alquiler/viviendas/girona/girona-capital/?r=&idz=0017.0001.9999.0001&ord=&pgn=1", 
            "tarragona": "https://www.tucasa.com/alquiler/viviendas/tarragona/tarragona-capital/?r=&idz=0043.0001.9999.0001&ord=&pgn=1", 
            "lleida": "https://www.tucasa.com/alquiler/viviendas/lleida/lleida-capital/?r=&idz=0025.0001.9999.0001&ord=&pgn=1",
-           "barcelona": "https://www.tucasa.com/alquiler/viviendas/barcelona/barcelona-capital/?r=&idz=0008.0001.9999.0001&ord=&pgn=46"}
+           "barcelona": "https://www.tucasa.com/alquiler/viviendas/barcelona/barcelona-capital/?r=&idz=0008.0001.9999.0001&ord=&pgn=1"}
 
 # Loop sobre cada ciutat
 for ciutat in ciutats:
