@@ -12,95 +12,86 @@ import requests
 from bs4 import BeautifulSoup
 # import csv
 
-# Inicialitzem el número de pàgina
-num_pag = 1
+# Ciutats que volem escrapejar: Diccionari amb les url inicials
+# (de moment url inicialitzades a la penúltima pàgina. Per l'scaping final canviar a pgn=1)
+ciutats = {"girona": "https://www.tucasa.com/alquiler/viviendas/girona/girona-capital/?r=&idz=0017.0001.9999.0001&ord=&pgn=11", 
+           "tarragona": "https://www.tucasa.com/alquiler/viviendas/tarragona/tarragona-capital/?r=&idz=0043.0001.9999.0001&ord=&pgn=1", 
+           "lleida": "https://www.tucasa.com/alquiler/viviendas/lleida/lleida-capital/?r=&idz=0025.0001.9999.0001&ord=&pgn=8",
+           "barcelona": "https://www.tucasa.com/alquiler/viviendas/barcelona/?r=&idz=0008&ord=&pgn=118"}
 
+# Loop sobre cada ciutat
+for ciutat in ciutats:
+    
+    url = ciutats[ciutat]
 
-# Loop sobre les diferents pàgines de la cerca (de moment només 2 per no haver de treure masses resultats per pantalla)
-for i in range(2):
-    # Bcn província, pag 1
-    url = "https://www.tucasa.com/alquiler/viviendas/barcelona/?r=&idz=0008&ord=&pgn=" + str(num_pag)
-
-
-    # Càrrega de la pàgina web
-    page = requests.get(url)
-    soup = BeautifulSoup(page.content, 'html.parser')
-
-    # Loop sobre tots els anuncis d'una pàgina
-    for anunci in soup.find_all('div', class_='contenedor-descripcion-inmueble'):
-        #print(anunci.prettify())
-
-        # %% 
-        # Càrrega dels atributs d'un anunci
-
-        print("preu")
-        # Per cada atribut utilitzem try ja que hi ha casos especials que no tenen totes les etiquetes que busquem
+    # Loop sobre les diferents pàgines de la cerca
+    while url != None:
+            
+        # Càrrega de la pàgina web
+        page = requests.get(url)
+        soup = BeautifulSoup(page.content, 'html.parser')
+    
+        # Loop sobre tots els anuncis d'una pàgina
+        for anunci in soup.find_all('div', class_='contenedor-descripcion-inmueble'):
+                
+            # Càrrega dels atributs de cada anunci
+    
+            # Per cada atribut utilitzem try ja que hi ha casos especials que no tenen totes les etiquetes que busquem
+            try:
+                # Agafem tot el contingut del tag
+                preu_str = anunci.find('div', class_='div-precio-cards hidden-listado').span.text.strip()
+                # Ens quedem només amb el valor
+                preu = preu_str.split(" ")[0]
+            except Exception as e:
+                preu = None
+    
+            try:
+                m2_str = anunci.find('li', class_="metros-cuadrados").text
+                m2 = m2_str.split(" ")[0]
+            except Exception as e:
+                m2 = None   
+            
+            try:
+                nHab_str = anunci.find('li', class_="num-habitaciones hidden-xs hidden-sm").text
+                nHab = nHab_str.split(" ")[0]
+            except Exception as e:
+                nHab = None  
+            
+            try:
+                nBanys_str = anunci.find('li', class_="num-baños").text
+                nBanys = nBanys_str.split(" ")[0]
+            except Exception as e:
+                nBanys = None
+            
+            try:
+                preu_m2_str = anunci.find('li', class_="precio-metro hidden-cards hidden-xs").text
+                preu_m2 = preu_m2_str.split(" ")[0]
+            except Exception as e:
+                preu_m2 = None
+            
+            try:
+                zona = anunci.find('span', class_='titulo-inmueble').text.strip()
+            except Exception as e:
+                zona = None
+            
+            try:
+                carrer = anunci.find('span', class_='calle-inmueble').text.strip()
+            except Exception as e:
+                carrer = None
+            
+            pagina = url.split("=")[-1]
+            
+            atributs = [ciutat, pagina, zona, carrer, preu, m2, preu_m2, nHab, nBanys]
+            print(atributs)
+    
+                
+        # Url de la pàgina següent
         try:
-            # Agafem tot el contingut del tag
-            preu_str = anunci.find('div', class_='div-precio-cards hidden-listado').span.text.strip()
-            # Ens quedem només amb el valor
-            preu = preu_str.split(" ")[0]
+            url0 = soup.find('div', class_="contenedor-paginacion-listado")
+            url = url0.find_all('a', class_='btn-paginacion br5 tr05')[1]['href']
+    
         except Exception as e:
-            preu = None
-        print(preu)
-
-
-        print("m2")
-        try:
-            m2_str = anunci.find('li', class_="metros-cuadrados").text
-            m2 = m2_str.split(" ")[0]
-        except Exception as e:
-            m2 = None   
-        print(m2)
-        
-
-        print("nHab") 
-        try:
-            nHab_str = anunci.find('li', class_="num-habitaciones hidden-xs hidden-sm").text
-            nHab = nHab_str.split(" ")[0]
-        except Exception as e:
-            nHab = None  
-        print(nHab)
-
-        
-        print("nBanys")
-        try:
-            nBanys_str = anunci.find('li', class_="num-baños").text
-            nBanys = nBanys_str.split(" ")[0]
-        except Exception as e:
-            nBanys = None
-        print(nBanys)
-
-
-        print("preu_m2")
-        try:
-            preu_m2_str = anunci.find('li', class_="precio-metro hidden-cards hidden-xs").text
-            preu_m2 = preu_m2_str.split(" ")[0]
-        except Exception as e:
-            preu_m2 = None
-        print(preu_m2)
-
-
-        print("zona")
-        try:
-            zona = anunci.find('span', class_='titulo-inmueble').text.strip()
-        except Exception as e:
-            zona = None
-        print(zona)
-
-
-        print("carrer")
-        try:
-            carrer = anunci.find('span', class_='calle-inmueble').text.strip()
-        except Exception as e:
-            carrer = None
-        print(carrer)
-
-        print()
-
-    #Incrementem el número de pàgina
-    num_pag = num_pag + 1
-
+            url = None
 
 
 
