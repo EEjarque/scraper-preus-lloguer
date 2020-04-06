@@ -9,6 +9,7 @@ per poder fer el seguiment dels preus dels pisos de lloguer
 """
 import requests
 from bs4 import BeautifulSoup
+
 import csv
 csv_file = open('webScraping_tucasa.csv', 'w', encoding='utf-8')
 
@@ -31,7 +32,7 @@ for ciutat in ciutats:
     while url != None:
 
         url = ciutats[ciutat] + str(numPag)
-            
+        
         # Càrrega de la pàgina web
         page = requests.get(url)
         soup = BeautifulSoup(page.content, 'html.parser')
@@ -86,6 +87,7 @@ for ciutat in ciutats:
             
             pagina = url.split("=")[-1]
             
+
             csv_writer.writerow([ciutat, pagina, zona, carrer, preu, m2, preu_m2, nHab, nBanys])
             
                 
@@ -96,6 +98,7 @@ for ciutat in ciutats:
     
         except Exception as e:
             url = None
+
 
         numPag = numPag + 1
 
