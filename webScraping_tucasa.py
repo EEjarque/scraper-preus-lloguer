@@ -4,29 +4,35 @@ Tipologia i cicle de vida de les dades
 Pràctica 1
 Narcís Coll Follia i Elisabet Ejarque Gonzalez
 Abril de 2020
-
 Projecte de web scraping del portal www.tucasa.com
 per poder fer el seguiment dels preus dels pisos de lloguer
 """
 import requests
 from bs4 import BeautifulSoup
-# import csv
+
+import csv
+csv_file = open('webScraping_tucasa.csv', 'w', encoding='utf-8')
+
+csv_writer = csv.writer(csv_file)
+csv_writer.writerow(['ciutat', 'pagina', 'zona', 'carrer', 'preu', 'm2', 'preu_m2', 'nHab', 'nBanys'])
 
 # Ciutats que volem escrapejar: Diccionari amb les url inicials
-# (de moment url inicialitzades a la penúltima pàgina. Per l'scaping final canviar a pgn=1)
-ciutats = {"girona": "https://www.tucasa.com/alquiler/viviendas/girona/girona-capital/?r=&idz=0017.0001.9999.0001&ord=&pgn=11", 
-           "tarragona": "https://www.tucasa.com/alquiler/viviendas/tarragona/tarragona-capital/?r=&idz=0043.0001.9999.0001&ord=&pgn=1", 
-           "lleida": "https://www.tucasa.com/alquiler/viviendas/lleida/lleida-capital/?r=&idz=0025.0001.9999.0001&ord=&pgn=8",
-           "barcelona": "https://www.tucasa.com/alquiler/viviendas/barcelona/?r=&idz=0008&ord=&pgn=118"}
+ciutats = {"girona": "https://www.tucasa.com/alquiler/viviendas/girona/girona-capital/?r=&idz=0017.0001.9999.0001&ord=&pgn=", 
+           "tarragona": "https://www.tucasa.com/alquiler/viviendas/tarragona/tarragona-capital/?r=&idz=0043.0001.9999.0001&ord=&pgn=", 
+           "lleida": "https://www.tucasa.com/alquiler/viviendas/lleida/lleida-capital/?r=&idz=0025.0001.9999.0001&ord=&pgn=",
+           "barcelona": "https://www.tucasa.com/alquiler/viviendas/barcelona/barcelona-capital/?r=&idz=0008.0001.9999.0001&ord=&pgn="}
 
 # Loop sobre cada ciutat
 for ciutat in ciutats:
-    
+
+    numPag = 1
     url = ciutats[ciutat]
 
     # Loop sobre les diferents pàgines de la cerca
     while url != None:
-            
+
+        url = ciutats[ciutat] + str(numPag)
+        
         # Càrrega de la pàgina web
         page = requests.get(url)
         soup = BeautifulSoup(page.content, 'html.parser')
@@ -81,17 +87,22 @@ for ciutat in ciutats:
             
             pagina = url.split("=")[-1]
             
-            atributs = [ciutat, pagina, zona, carrer, preu, m2, preu_m2, nHab, nBanys]
-            print(atributs)
-    
+
+            csv_writer.writerow([ciutat, pagina, zona, carrer, preu, m2, preu_m2, nHab, nBanys])
+            
                 
-        # Url de la pàgina següent
+        # Comprovem si existeix una pàgina següent
         try:
             url0 = soup.find('div', class_="contenedor-paginacion-listado")
             url = url0.find_all('a', class_='btn-paginacion br5 tr05')[1]['href']
     
         except Exception as e:
             url = None
+
+
+        numPag = numPag + 1
+
+csv_file.close()
 
 
 
