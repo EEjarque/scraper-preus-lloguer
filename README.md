@@ -1,3 +1,4 @@
+[![DOI](https://zenodo.org/badge/249462822.svg)](https://zenodo.org/badge/latestdoi/249462822)
 # Data set: Preu i característiques dels habitatges de lloguer a les principals ciutats catalanes
 El data set recull informació sobre el preu i les característiques dels habitatges de lloguer anunciats al portal immobiliari www.tucasa.com a les ciutats de Girona, Tarragona, Lleida i Barcelona.
 
